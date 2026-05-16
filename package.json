@@ -1,0 +1,29 @@
+{
+  "name": "dana-cermat-be",
+  "version": "1.0.0",
+  "description": "backend-danacermat",
+  "license": "ISC",
+  "author": "raffy_samaa",
+  "type": "commonjs",
+  "main": "App.js",
+  "scripts": {
+    "start": "node App.js",
+    "dev": "nodemon App.js"
+  },
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "body-parser": "^2.2.2",
+    "cors": "^2.8.6",
+    "dotenv": "^17.3.1",
+    "express": "^5.2.1",
+    "express-session": "^1.19.0",
+    "jsonwebtoken": "^9.0.3",
+    "mysql": "^2.18.1",
+    "mysql2": "^3.21.1",
+    "passport": "^0.7.0",
+    "passport-google-oauth20": "^2.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
+  }
+}
