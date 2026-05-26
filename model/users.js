@@ -13,9 +13,10 @@ const userLoginAuth = (email_user) => {
 
 const transactions = (userid, id_categories, amount, descriptions, date ) => {
  const sql = ` INSERT INTO transactions (id_user, 	id_categories, amount, descriptions, created_at) VALUES ('${userid}', '${id_categories}', '${amount}', '${descriptions}', '${date}')`;
-  return connectDB.execute(sql);
+ return connectDB.execute(sql);
 
 }
+
 
 
 

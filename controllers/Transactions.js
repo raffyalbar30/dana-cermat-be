@@ -23,7 +23,12 @@ const execute = userModels.transactions(userid, id_categories, amount, descripti
 }
 
 exports.getAllTranscations = (req, res) => {
-    const tokenUser  = req.user.id; 
+    const tokenUser  = req.user.id;
+    const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 5; 
+    const start = (page - 1 ) * limit; 
+    const end = start + limit; 
+
 
     const sql = `SELECT 
      transactions.id_transaction, user_cermat.email_user, categories.name_categories, categories.type_categories, 
@@ -31,19 +36,39 @@ exports.getAllTranscations = (req, res) => {
      transactions.id_user = user_cermat.user_id JOIN categories ON transactions.id_categories = categories.categories_id
      WHERE user_cermat.user_id = ${tokenUser}`;
 
-     console.log(tokenUser)
-
     connectDB.query(sql, (err, result) => {
          if(result) {
-             return res.status(201).json({
-                data: result
-             })
+            const dataLength = result.length;
+            const endPages = Math.ceil(result.length / limit);
+            const dataResults = result.slice(start, end);
 
-            } else { 
-                return res.status(401).json({
-                    message: " Maaf data tidak ada"
+            try {
+
+            if( page > endPages) { 
+                return res.status(404).json({
+                    success: false,
+                    message: "Maaf page sudah habis",
+                    endPage: endPages
                 })
+            }  else {
+              return res.status(201).json({
+                   data: dataResults, 
+                   paginations: {
+                       pages : page,
+                       perPage: limit, 
+                       totalData: dataLength, 
+                       endPage: endPages
+                   }
+                   
+              })
             }
+
+            } catch (error) {
+                 return res.status(404).json({
+                   data: "maaf data eror"
+                   
+              })
+            }}
     })
 }
 
@@ -65,3 +90,4 @@ exports.TypeCategories = ( req, res) => {
        }
    })
 }
+

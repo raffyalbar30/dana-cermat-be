@@ -12,4 +12,5 @@ router.post("/Transaksi", VerifyToken, transactions.Transactions);
 router.get("/Transaksi/v1/getCategories", transactions.TypeCategories); 
 router.get("/Transaksi/v1/getAllTransaksi", VerifyToken, transactions.getAllTranscations);
 
+
 module.exports = router;
