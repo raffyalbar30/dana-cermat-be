@@ -92,7 +92,7 @@ exports.TypeCategories = ( req, res) => {
 }
 
 
-exports.RenameTransakstions = (req, res) => {
+exports.RenameTranscations = (req, res) => {
    const { amount, descriptions, idcategories, idtransaction } = req.body; 
    const execute = userModels.renametransactions(amount, descriptions, idcategories, idtransaction); 
 
@@ -111,4 +111,6 @@ exports.RenameTransakstions = (req, res) => {
      })
    }
 }
+
+
 
