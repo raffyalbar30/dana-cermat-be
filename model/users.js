@@ -16,17 +16,33 @@ const transactions = (userid, id_categories, amount, descriptions, date ) => {
  return connectDB.execute(sql);
 }
 
-const renametransactions = (amount, descriptions, idcategories, idtransaction) => {
-    const sql = `UPDATE transactions SET amount = ${amount}, descriptions = '${descriptions}', id_categories = ${idcategories} WHERE id_transaction = ${idtransaction}`;
+const renametransactions = (amount, descriptions, namecategories, idtransaction) => {
+    const sql = `UPDATE transactions 
+    SET
+    amount = ${amount},
+    descriptions = '${descriptions}',
+    id_categories = (
+        SELECT categories_id
+        FROM categories
+        WHERE name_categories = '${namecategories}'
+    )
+   WHERE id_transaction = ${idtransaction}`;
+
     return connectDB.execute(sql); 
 }
 
+
+const dellatetransacions = (idtransaction) => {
+   const sql = `DELETE FROM transactions WHERE id_transaction = ${idtransaction}`; 
+   return connectDB.execute(sql);
+}
 
 
 module.exports = {
    userRegisterAuth,
    userLoginAuth, 
    transactions, 
-   renametransactions
+   renametransactions, 
+   dellatetransacions
   
 }

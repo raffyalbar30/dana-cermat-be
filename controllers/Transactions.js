@@ -93,24 +93,38 @@ exports.TypeCategories = ( req, res) => {
 
 
 exports.RenameTranscations = (req, res) => {
-   const { amount, descriptions, idcategories, idtransaction } = req.body; 
-   const execute = userModels.renametransactions(amount, descriptions, idcategories, idtransaction); 
+   const { amount, descriptions, namecategories, idtransaction } = req.body; 
+   const execute = userModels.renametransactions(amount, descriptions, namecategories, idtransaction); 
 
    if(execute) {
      return res.status(201).json({
         idtransaction: idtransaction,
-        idcategories: idcategories, 
+        namecategories: namecategories, 
         amount : amount, 
         descriptions: descriptions,
-        message: "data telah berhasil diupdate!"
+        message: "transaksi telah berhasil diupdate!"
      })
    } else { 
        return res.status(404).json({
-        message: "data gagal diupdate!",
+        message: "transaksi gagal diupdate!",
         error: err.message
      })
    }
 }
 
+exports.DellateTranscations = (req, res ) => {
+    const { idtransactions } = req.body; 
+    const execute = userModels.dellatetransacions(idtransactions); 
 
+    if (execute) {
+        return res.status(201).json({
+           message: `transaksi dengan id ${idtransactions} telah berhasil dihapus`,
+        }) 
+    } else { 
+        return res.status(404).json({
+            Error : Error,
+            message: "transaksi gagal dihapus",
+        })
+    }
+}
 
