@@ -16,7 +16,7 @@ const transactions = (userid, id_categories, amount, descriptions, date ) => {
  return connectDB.execute(sql);
 }
 
-const renametransactions = (amount, descriptions, namecategories, idtransaction) => {
+const renametransactions = (amount, descriptions, typecategories, idtransaction, date) => {
     const sql = `UPDATE transactions 
     SET
     amount = ${amount},
@@ -24,8 +24,9 @@ const renametransactions = (amount, descriptions, namecategories, idtransaction)
     id_categories = (
         SELECT categories_id
         FROM categories
-        WHERE name_categories = '${namecategories}'
-    )
+        WHERE name_categories = '${typecategories}'
+    ), 
+   created_at = ${date}, 
    WHERE id_transaction = ${idtransaction}`;
 
     return connectDB.execute(sql); 
