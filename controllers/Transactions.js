@@ -93,13 +93,13 @@ exports.TypeCategories = ( req, res) => {
 
 
 exports.RenameTranscations = (req, res) => {
-   const { amount, descriptions, typecategories, idtransaction, date } = req.body; 
-   const execute = userModels.renametransactions(amount, descriptions, typecategories, idtransaction, date); 
+   const { amount, descriptions, namecategories, date, idtransaction, } = req.body; 
+   const execute = userModels.renametransactions(amount, descriptions, namecategories, date, idtransaction); 
 
    if(execute) {
      return res.status(201).json({
         idtransaction: idtransaction,
-        typecategories: typecategories, 
+        namecategories: namecategories, 
         amount : amount, 
         date : date, 
         descriptions: descriptions,
