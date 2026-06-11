@@ -93,15 +93,18 @@ exports.TypeCategories = ( req, res) => {
 
 
 exports.RenameTranscations = (req, res) => {
-   const { amount, descriptions, namecategories, date, idtransaction, } = req.body; 
-   const execute = userModels.renametransactions(amount, descriptions, namecategories, date, idtransaction); 
+   const { amount, descriptions, id_categories, date, idtransaction, } = req.body; 
+   const convertDate = date ? `${new Date(date).getFullYear()}-${String(new Date(date).getMonth() + 1)
+                        .padStart(2, "0")}-${String(new Date(date).getDate()).padStart(2, "0")}`: "";
+
+   const execute = userModels.renametransactions(amount, descriptions, id_categories, convertDate, idtransaction); 
 
    if(execute) {
      return res.status(201).json({
         idtransaction: idtransaction,
-        namecategories: namecategories, 
+        id_categories: id_categories, 
         amount : amount, 
-        date : date, 
+        date : convertDate, 
         descriptions: descriptions,
         message: "transaksi telah berhasil diupdate!"
      })
