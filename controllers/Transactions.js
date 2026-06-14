@@ -1,7 +1,7 @@
 const connectDB = require("../DB/connections"); 
 const userModels = require("../model/users");
 
-
+// transactions
 exports.Transactions = (req, res) => {
 const {id_categories, amount, descriptions, date} = req.body;
 const userid = req.user.id;
