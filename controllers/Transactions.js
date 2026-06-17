@@ -116,6 +116,7 @@ exports.RenameTranscations = (req, res) => {
    }
 }
 
+
 exports.DellateTranscations = (req, res ) => {
     const { idtransactions } = req.body; 
     const execute = userModels.dellatetransacions(idtransactions); 
