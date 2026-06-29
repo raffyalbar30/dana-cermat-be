@@ -34,12 +34,17 @@ const dellatetransacions = (idtransaction) => {
    return connectDB.execute(sql);
 }
 
+const getAllbudgets = () => {
+   const sql = `SELECT name_categories FROM categories`;
+   return connectDB.execute(sql);
+}
 
 module.exports = {
    userRegisterAuth,
    userLoginAuth, 
    transactions, 
    renametransactions, 
-   dellatetransacions
+   dellatetransacions, 
+   getAllbudgets
   
 }
