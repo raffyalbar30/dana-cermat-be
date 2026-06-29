@@ -34,8 +34,24 @@ const dellatetransacions = (idtransaction) => {
    return connectDB.execute(sql);
 }
 
-const getAllbudgets = () => {
-   const sql = `SELECT name_categories FROM categories`;
+const addBudgets = (user, category, amount, periode, startdate, enddate) => {
+   const sql = `INSERT INTO budgets (
+      budget_user,
+      budget_category,
+      budget_amount,
+      period,
+      start_date,
+      end_date
+   )
+   VALUES (
+      ${user},              
+      ${category},              
+      ${amount},      
+      '${periode}',      
+      '${startdate}',   
+      '${enddate}'    
+   )`;
+
    return connectDB.execute(sql);
 }
 
@@ -44,7 +60,7 @@ module.exports = {
    userLoginAuth, 
    transactions, 
    renametransactions, 
-   dellatetransacions, 
-   getAllbudgets
+   dellatetransacions,
+   addBudgets
   
 }
