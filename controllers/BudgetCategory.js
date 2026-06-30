@@ -22,25 +22,49 @@ exports.typeBudgetCategories = (req, res) => {
 
 exports.AddBudgets = (req, res) => {
     const userid = req.user.id;
-    const {category, amount, periode, startdate, enddate} = req.body;
-    const convertDate = startdate ? `${new Date(startdate).getFullYear()}-${String(new Date(startdate).getMonth() + 1)
-                        .padStart(2, "0")}-${String(new Date(startdate).getDate()).padStart(2, "0")}`: "";
+    const {category, amount, periode, startdate} = req.body; 
 
-    switch (convertDate) {
-        case periode === "three day":
-           convertDate.setDate(convertDate.getDate() + 2);
+    const startDate = new Date(startdate);
+
+    let endDate = new Date(startDate);
+    
+    switch (periode) {
+        case "three day":
+           endDate.setDate(endDate.getDate() + 2);
             break;
-        case periode === "weekly":
-           convertDate.setDate(convertDate.getDate() + 6); 
+        case "weekly":
+           endDate.setDate(endDate.getDate() + 6);
             break;
-        case periode === "monthly":
-           convertDate = new Date(convertDate.getFullYear(), convertDate.getMonth() + 1, 0);
+        case "monthly":
+           endDate = new Date(startDate.getFullYear(),startDate.getMonth() + 1,0);
             break;
-        case periode === "yearly":
-           convertDate = new Date( convertDate.getFullYear(),11,31);
+        case "yearly":
+           endDate = new Date(startDate.getFullYear(),11,31);
             break;
         default:
+          return res.status(404).json({
+                message: "Periode tidak valid."
+            });
+
             break;
     }
-    const addBudgets = userModels.addBudgets(); 
+  
+    const addBudgets = userModels.addBudgets(userid, category, amount, periode, startdate, endDate); 
+
+    if(addBudgets){
+        return res.status(201).json({
+            user_id: userid, 
+            categories: category,  
+            amount: amount, 
+            priode: periode, 
+            startDate: startdate, 
+            endDate: endDate, 
+            message: "budgeting telah ditambahkan"
+        })
+    } else {
+        return res.status(404).json({
+            error: Error,
+            message: "gagal menambahkan budgeting"
+        })
+    }
 }
