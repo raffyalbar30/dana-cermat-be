@@ -29,11 +29,11 @@ exports.AddBudgets = (req, res) => {
     let endDate = new Date(startDate);
     
     switch (periode) {
-        case "three day":
-           endDate.setDate(endDate.getDate() + 2);
+        case "threeday":
+           endDate.setDate(endDate.getDate() + 3);
             break;
         case "weekly":
-           endDate.setDate(endDate.getDate() + 6);
+           endDate.setDate(endDate.getDate() + 7);
             break;
         case "monthly":
            endDate = new Date(startDate.getFullYear(),startDate.getMonth() + 1,0);
@@ -48,8 +48,11 @@ exports.AddBudgets = (req, res) => {
 
             break;
     }
-  
-    const addBudgets = userModels.addBudgets(userid, category, amount, periode, startdate, endDate); 
+    
+    const formattedStartDate = startDate.toISOString().split("T")[0];
+    const formattedEndDate = endDate.toISOString().split("T")[0];
+
+    const addBudgets = userModels.addBudgets(userid, category, amount, periode, formattedStartDate, formattedEndDate); 
 
     if(addBudgets){
         return res.status(201).json({
@@ -58,7 +61,7 @@ exports.AddBudgets = (req, res) => {
             amount: amount, 
             priode: periode, 
             startDate: startdate, 
-            endDate: endDate, 
+            endDate: formattedEndDate, 
             message: "budgeting telah ditambahkan"
         })
     } else {
