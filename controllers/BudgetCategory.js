@@ -71,3 +71,40 @@ exports.AddBudgets = (req, res) => {
         })
     }
 }
+
+
+exports.getAllBudgets = async ( req, res) => {
+  const sql = `SELECT
+      b.id,
+      u.user_id,
+      u.email_user,
+      c.categories_id,
+      c.name_categories,
+      c.type_categories,
+      b.budget_amount,
+      b.period,
+      b.start_date,
+      b.end_date,
+      b.created_at
+   FROM budgets b
+   INNER JOIN user_cermat u
+      ON b.budget_user = u.user_id
+   INNER JOIN categories c
+      ON b.budget_category = c.categories_id
+   WHERE b.budget_user = 15
+   ORDER BY b.created_at DESC`; 
+   
+   connectDB.query(sql, (err, result) => {
+      if (result) {
+        return res.status(201).json({
+            data: result, 
+            message: "memuat semua data budgeting"
+        });
+      } else {
+        return res.status(401).json({
+            Error: Error, 
+            message: "gagal membuat data budgeting"
+        });
+      }
+   })
+}

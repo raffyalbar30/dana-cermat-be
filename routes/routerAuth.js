@@ -16,6 +16,7 @@ router.post("/Transaksi/v1/renameTransaksi", transactions.RenameTranscations);
 router.post("/Transaksi/v1/dellateTransaksi", transactions.DellateTranscations); 
 router.get("/Budgets/v1/getAllcategories", budgets.typeBudgetCategories); 
 router.post("/Budgets/v1/addbudgets", VerifyToken, budgets.AddBudgets); 
+router.get("/Budgets/v1/getAllBudgets", VerifyToken, budgets.getAllBudgets);
 
 
 module.exports = router;

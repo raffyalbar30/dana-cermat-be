@@ -34,7 +34,7 @@ const dellatetransacions = (idtransaction) => {
    return connectDB.execute(sql);
 }
 
-const addBudgets = (user, category, amount, periode, startdate, enddate) => {
+const addBudgets = (user, category, amount, periode, startdate, enddate) => {   
    const sql = `INSERT INTO budgets (
       budget_user,
       budget_category,
@@ -54,6 +54,7 @@ const addBudgets = (user, category, amount, periode, startdate, enddate) => {
 
    return connectDB.execute(sql);
 }
+
 
 module.exports = {
    userRegisterAuth,
