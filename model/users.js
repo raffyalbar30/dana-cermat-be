@@ -55,6 +55,10 @@ const addBudgets = (user, category, amount, periode, startdate, enddate) => {
    return connectDB.execute(sql);
 }
 
+const dellatebudgets = (idbudgets) => { 
+   const sql = `DELETE FROM budgets WHERE id = ${idbudgets}`;
+   return connectDB.execute(sql); 
+}
 
 module.exports = {
    userRegisterAuth,
@@ -62,6 +66,6 @@ module.exports = {
    transactions, 
    renametransactions, 
    dellatetransacions,
-   addBudgets
-  
+   addBudgets, 
+   dellatebudgets
 }

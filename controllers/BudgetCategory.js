@@ -108,3 +108,19 @@ exports.getAllBudgets = async ( req, res) => {
       }
    })
 }
+
+exports.DellateBudgets = (req, res ) => {
+    const { idBudgets } = req.body; 
+    const execute = userModels.dellatebudgets(idBudgets); 
+
+    if (execute) {
+        return res.status(201).json({
+           message: `transaksi dengan id ${idBudgets} telah berhasil dihapus`,
+        }) 
+    } else { 
+        return res.status(404).json({
+            Error : Error,
+            message: "transaksi gagal dihapus",
+        })
+    }
+}
