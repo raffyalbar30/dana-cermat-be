@@ -109,13 +109,15 @@ exports.getAllBudgets = async ( req, res) => {
    })
 }
 
+// edd dellated apps
+
 exports.DellateBudgets = (req, res ) => {
     const { idBudgets } = req.body; 
     const execute = userModels.dellatebudgets(idBudgets); 
 
     if (execute) {
         return res.status(201).json({
-           message: `transaksi dengan id ${idBudgets} telah berhasil dihapus`,
+           message: `budget dengan id ${idBudgets} telah berhasil dihapus`,
         }) 
     } else { 
         return res.status(404).json({
