@@ -72,7 +72,7 @@ exports.AddBudgets = (req, res) => {
     }
 }
 
-
+// dellated budgets 
 exports.getAllBudgets = async ( req, res) => {
   const tokenUser  = req.user.id;
   const sql = `SELECT
