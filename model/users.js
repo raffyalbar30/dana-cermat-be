@@ -56,7 +56,7 @@ const addBudgets = (user, category, amount, periode, startdate, enddate) => {
 }
 
 const dellatebudgets = (idbudgets) => { 
-   const sql = `DELETE FROM budgets WHERE id = ${idbudgets}`;
+   const sql = `DELETE FROM budgets WHERE id_budgets = ${idbudgets}`;
    return connectDB.execute(sql); 
 }
 

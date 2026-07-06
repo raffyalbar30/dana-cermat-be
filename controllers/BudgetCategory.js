@@ -74,8 +74,9 @@ exports.AddBudgets = (req, res) => {
 
 
 exports.getAllBudgets = async ( req, res) => {
+  const tokenUser  = req.user.id;
   const sql = `SELECT
-      b.id,
+      b.id_budgets,
       u.user_id,
       u.email_user,
       c.categories_id,
@@ -91,7 +92,7 @@ exports.getAllBudgets = async ( req, res) => {
       ON b.budget_user = u.user_id
    INNER JOIN categories c
       ON b.budget_category = c.categories_id
-   WHERE b.budget_user = 15
+   WHERE b.budget_user = ${tokenUser}
    ORDER BY b.created_at DESC`; 
    
    connectDB.query(sql, (err, result) => {
