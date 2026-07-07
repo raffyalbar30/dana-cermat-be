@@ -56,8 +56,20 @@ const addBudgets = (user, category, amount, periode, startdate, enddate) => {
 }
 
 const dellatebudgets = (idbudgets) => { 
-   const sql = `DELETE FROM budgets WHERE id_budgets = ${idbudgets}`;
+   const sql = `DELETE FROM budgets WHERE id_budgets   = ${idbudgets}`;
    return connectDB.execute(sql); 
+}
+
+const updatebudgets = (idcategory, amount, period, startdate, enddate, idbudgets ) => {
+   const sql = `UPDATE budgets SET
+    budget_category = ${idcategory},
+    budget_amount = ${amount},
+    period = '${period}',
+    start_date = '${startdate}', 
+    end_date = '${enddate}'
+    WHERE id_budgets = ${idbudgets}`;
+    
+   return connectDB.execute(sql);
 }
 
 module.exports = {
@@ -67,5 +79,6 @@ module.exports = {
    renametransactions, 
    dellatetransacions,
    addBudgets, 
-   dellatebudgets
+   dellatebudgets, 
+   updatebudgets
 }

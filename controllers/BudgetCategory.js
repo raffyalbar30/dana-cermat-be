@@ -111,7 +111,6 @@ exports.getAllBudgets = async ( req, res) => {
 }
 
 // edd dellated apps
-
 exports.DellateBudgets = (req, res ) => {
     const { idBudgets } = req.body; 
     const execute = userModels.dellatebudgets(idBudgets); 
@@ -127,3 +126,57 @@ exports.DellateBudgets = (req, res ) => {
         })
     }
 }
+
+exports.UpdateBudgets = (req, res) => {
+   const { idcategory, amount, period, startdate, idbudgets } = req.body; 
+   const convertDate = startdate ? `${new Date(startdate).getFullYear()}-${String(new Date(startdate).getMonth() + 1)
+                        .padStart(2, "0")}-${String(new Date(startdate).getDate()).padStart(2, "0")}`: "";
+
+   const startDate = new Date(startdate);
+
+    let endDate = new Date(startDate);
+    
+    switch (period) {
+        case "threeday":
+           endDate.setDate(endDate.getDate() + 3);
+            break;
+        case "weekly":
+           endDate.setDate(endDate.getDate() + 7);
+            break;
+        case "monthly":
+           endDate = new Date(startDate.getFullYear(),startDate.getMonth() + 1,0);
+            break;
+        case "yearly":
+           endDate = new Date(startDate.getFullYear(),11,31);
+            break;
+        default:
+          return res.status(404).json({
+                message: "Periode tidak valid."
+            });
+
+            break;
+    }
+
+    const convertEndDate = endDate ? `${new Date(endDate).getFullYear()}-${String(new Date(endDate).getMonth() + 1)
+                        .padStart(2, "0")}-${String(new Date(endDate).getDate()).padStart(2, "0")}`: "";
+    
+   const execute = userModels.updatebudgets(idcategory, amount, period, convertDate, convertEndDate, idbudgets); 
+
+   if(execute) {
+     return res.status(201).json({
+        id_budgets: idbudgets,
+        id_categories: idcategory, 
+        amount : amount, 
+        periode: period,
+        startdate : convertDate, 
+        enddate: convertEndDate,
+        message: "budgets telah berhasil diupdate!"
+     })
+   } else { 
+       return res.status(404).json({
+        message: "transaksi gagal diupdate!",
+        error: err.message
+     })
+   }
+}
+
