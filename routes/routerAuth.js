@@ -10,6 +10,7 @@ router.use(express.json());
 router.post("/Register", Register.RegisterAuth); 
 router.post("/Login", Login.LoginAuth);
 router.post("/Transaksi", VerifyToken, transactions.Transactions);
+router.get("/TotalTransaksi", VerifyToken, transactions.TotalTransactions);
 router.get("/Transaksi/v1/getCategories", transactions.TypeCategories); 
 router.get("/Transaksi/v1/getAllTransaksi", VerifyToken, transactions.getAllTranscations);
 router.post("/Transaksi/v1/renameTransaksi", transactions.RenameTranscations); 

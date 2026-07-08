@@ -1,6 +1,32 @@
 const connectDB = require("../DB/connections"); 
 const userModels = require("../model/users");
 
+
+// Total Transactions 
+exports.TotalTransactions = (req, res) => {
+  const userid = req.user.id;
+  const sql = `SELECT COALESCE(SUM(CASE WHEN c.type_categories='Income' THEN t.amount ELSE 0 END),0) AS total_income, 
+   COALESCE(SUM(CASE WHEN c.type_categories='Expanses' THEN t.amount ELSE 0 END),0) AS total_expense, COALESCE(SUM(CASE WHEN c.type_categories='Income' THEN t.amount ELSE -t.amount END),0)
+    AS net_balance FROM transactions t JOIN categories c ON t.id_categories = c.categories_id WHERE t.id_user = ${userid}`;
+ 
+  connectDB.query(sql, (err, result) => {
+      if (result) {
+        return res.status(201).json({
+            userid: userid, 
+            data: result,
+            message: "memuat data total transactions"
+        })
+      } else {
+        return res.status(404).json({
+            err: Error, 
+            message: "gagal memuat data total transactions"
+        })
+      }
+
+  })
+}
+
+
 // transactions
 exports.Transactions = (req, res) => {
 const {id_categories, amount, descriptions, date} = req.body;

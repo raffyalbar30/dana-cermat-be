@@ -11,6 +11,7 @@ const userLoginAuth = (email_user) => {
 
 }
 
+
 const transactions = (userid, id_categories, amount, descriptions, date ) => {
  const sql = ` INSERT INTO transactions (id_user, 	id_categories, amount, descriptions, created_at) VALUES ('${userid}', '${id_categories}', '${amount}', '${descriptions}', '${date}')`;
  return connectDB.execute(sql);
@@ -74,7 +75,7 @@ const updatebudgets = (idcategory, amount, period, startdate, enddate, idbudgets
 
 module.exports = {
    userRegisterAuth,
-   userLoginAuth, 
+   userLoginAuth,
    transactions, 
    renametransactions, 
    dellatetransacions,
