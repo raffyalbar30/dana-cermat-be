@@ -187,3 +187,42 @@ exports.UpdateBudgets = (req, res) => {
    }
 }
 
+
+exports.TotalBudegts = (req, res) =>{
+     const userid = req.user.id;
+
+     const sql = `SELECT SUM(b.budget_amount) AS total_budget, SUM( ( SELECT COALESCE(SUM(t.amount), 0) FROM transactions 
+     t WHERE t.id_user = b.budget_user AND t.id_categories = b.budget_category AND DATE(t.created_at) BETWEEN b.start_date AND b.end_date ) )
+     AS total_spending, SUM(b.budget_amount) - SUM( ( SELECT COALESCE(SUM(t.amount), 0) FROM transactions t WHERE t.id_user = b.budget_user AND t.id_categories = b.budget_category 
+     AND DATE(t.created_at) BETWEEN b.start_date AND b.end_date ) ) AS total_remaining FROM budgets b WHERE b.budget_user = ${userid}`;
+
+     connectDB.query(sql, (err, result) => {
+          if (result) {
+    
+    const data = result.map(item => {
+
+    const used = Number(item.total_spending);
+
+    const budget = Number(item.total_budget);
+
+    const progress = budget > 0 ? Math.min(Math.round((used / budget) * 100), 100): 0;
+
+
+    return {
+        ...item,
+        progress
+    };
+});
+
+        return res.status(201).json({
+            data: data, 
+            message: "memuat Total data budgeting"
+        });
+      } else {
+        return res.status(401).json({
+            Error: Error, 
+            message: "gagal memuat Total data budgeting"
+        });
+      }
+     })
+}
