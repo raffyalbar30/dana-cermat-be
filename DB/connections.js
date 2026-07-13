@@ -1,5 +1,9 @@
 const mysql = require("mysql2");
 
+// -------------------------------------//
+//   conect to database dana-cermat   //
+// -------------------------------------//
+
 const connectDB = mysql.createConnection({
     host: "localhost",
     user: "root",
