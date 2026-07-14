@@ -20,6 +20,7 @@ exports.typeBudgetCategories = (req, res) => {
     })
 }
 
+
 exports.AddBudgets = (req, res) => {
     const userid = req.user.id;
     const {category, amount, periode, startdate} = req.body; 

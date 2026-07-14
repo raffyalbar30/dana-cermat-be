@@ -3,7 +3,17 @@ const userModels = require("../model/users");
 const jwt = require("jsonwebtoken"); 
 const bcrypt = require("bcrypt");
 
-// Login Logic Auth
+// -------------------------------------//
+     //   Authentications Login  //
+// -------------------------------------//
+
+// 1. bikin bodyresponse untuk menampung emai, password yang dikirim front end
+// 2. check email dengan query select sql, dan validasi
+// 3. jika email ada maka password di compare jadi bcrypt format lalu disimpan 
+//    didatabase 
+// 4. Email user diconvert menjadi jwt token untuk session user
+// 5. jika tidak maka send response 401 json filed 
+
 exports.LoginAuth = async(req, res) => {
   const {email_user, password_user} = req.body;
    const sql =`SELECT * FROM user_cermat WHERE email_user = '${email_user}'`;
@@ -39,7 +49,18 @@ exports.LoginAuth = async(req, res) => {
    })
 }
 
-// Register Logic Auth
+
+// -------------------------------------//
+     //   Authentications Register //
+// -------------------------------------//
+
+// 1. bikin bodyresponse untuk menampung email, password yang dikirim front end
+// 2. hash password dengan bycrypt untuk keaman user lalu simpan di database 
+// 3. bikin validasi jika email user lebih dari satu maka terdaftar tampilkan response 403
+//    untuk email yang terdaftar
+// 4. jika tidak maka email dan password disimpan ke database dan user berhasil register 
+
+
 exports.RegisterAuth = async (req, res) => {
   const {email_user, password_user} = req.body; 
   const sql = `SELECT 1 FROM user_cermat WHERE email_user = '${email_user}' LIMIT 1;`;
