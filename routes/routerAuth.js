@@ -7,6 +7,7 @@ const VerifyToken  = require("../middlewares/JwtToken");
 const router = express.Router();
 router.use(express.json());
 
+// Router disini untuk fecthing apo
 router.post("/Register", Register.RegisterAuth); 
 router.post("/Login", Login.LoginAuth);
 router.post("/Transaksi", VerifyToken, transactions.Transactions);
