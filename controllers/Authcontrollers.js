@@ -16,36 +16,36 @@ const bcrypt = require("bcrypt");
 
 exports.LoginAuth = async(req, res) => {
   const {email_user, password_user} = req.body;
-   const sql =`SELECT * FROM user_cermat WHERE email_user = '${email_user}'`;
+
+   const sql = `SELECT * FROM user_cermat WHERE email_user ='${email_user}'`;
 
    connectDB.query(sql, async (err, result) => {
-     if (result.length > 0) {
-        for (let index = 0; index < result.length; index++) {
-          const passwordDecode = await bcrypt.compare( password_user, result[index].password_user);
-
-            if (passwordDecode) {
-               const user = {
-                id: result[index].user_id, 
-                email: result[index].email_user
+    const data = result.find(item => item); 
+    if(data != null) {
+        const passwordDecode = await bcrypt.compare(password_user, data.password_user);
+        if (passwordDecode) {
+            const user = {
+                id: data.user_id, 
+                email: data.email_user
               }
-               
-              const token = jwt.sign(user, "SECRET_KEY", {expiresIn: "3h",})
-              res.status(201).json({
-                  AuthToken : token,
-                  message : "Login berhasil"
-                })
-
-            } else {
-               res.status(401).json({
-                 message: "Maaf password salah"
-               })
+                  
+                const token = jwt.sign(user, "SECRET_KEY", {expiresIn: "3h",})
+                  res.status(201).json({
+                      AuthToken : token,
+                      message : "Login berhasil"
+                    })
+    
+          } else {
+            res.status(403).json({
+                message: "Maaf password salah"
+              })
             }
-        }
-     } else {
+    } else { 
         res.status(403).json({
-          message: "Maaf user tidak ada silahkan registerasi dahulu!"
+            message: "Maaf akun tidak terdaftar silahkan daftar terlebih dahulu"
         })
-     }
+    }
+
    })
 }
 
