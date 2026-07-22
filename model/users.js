@@ -1,15 +1,15 @@
 const connectDB = require("../DB/connections"); 
 
+const JwtLogin = (user_id, token, expires_at) => {
+
+   return connectDB.execute(); 
+}
+
 const userRegisterAuth = (email_user, password_user) => {
    const sql = `INSERT INTO user_cermat (email_user, password_user) VALUES ('${email_user}', '${password_user}')`;
    return connectDB.execute(sql)
 }
 
-const userLoginAuth = (email_user) => {
-   const sql =`SELECT * FROM user_cermat WHERE email_user = '${email_user}'`;
-   return connectDB.execute(sql);
-
-}
 
 
 const transactions = (userid, id_categories, amount, descriptions, date ) => {
@@ -75,7 +75,6 @@ const updatebudgets = (idcategory, amount, period, startdate, enddate, idbudgets
 
 module.exports = {
    userRegisterAuth,
-   userLoginAuth,
    transactions, 
    renametransactions, 
    dellatetransacions,

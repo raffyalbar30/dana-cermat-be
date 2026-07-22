@@ -1,7 +1,7 @@
 const connectDB = require("../DB/connections"); 
 const userModels = require("../model/users"); 
-const jwt = require("jsonwebtoken"); 
 const bcrypt = require("bcrypt");
+const generateToken = require("../services/generateToken"); 
 
 // -------------------------------------//
      //   Authentications Login  //
@@ -20,33 +20,40 @@ exports.LoginAuth = async(req, res) => {
    const sql = `SELECT * FROM user_cermat WHERE email_user ='${email_user}'`;
 
    connectDB.query(sql, async (err, result) => {
-    const data = result.find(item => item); 
-    if(data != null) {
-        const passwordDecode = await bcrypt.compare(password_user, data.password_user);
-        if (passwordDecode) {
-            const user = {
-                id: data.user_id, 
-                email: data.email_user
-              }
-                  
-                const token = jwt.sign(user, "SECRET_KEY", {expiresIn: "3h",})
-                  res.status(201).json({
-                      AuthToken : token,
-                      message : "Login berhasil"
-                    })
-    
-          } else {
-            res.status(403).json({
-                message: "Maaf password salah"
-              })
-            }
-    } else { 
-        res.status(403).json({
-            message: "Maaf akun tidak terdaftar silahkan daftar terlebih dahulu"
-        })
-    }
+      const data = result[0]; 
 
+      if(!data){
+         return res.status(403).json({
+            message:"Maaf user tidak terdaftar silahkan daftar terlebih dahulu!"
+         })
+      }
+      
+
+      const passwordValid = await bcrypt.compare(password_user, data.password_user); 
+
+      if(!passwordValid){
+        return res.status(403).json({
+          message:"Maaf email atau password salah!"
+        })
+      } 
+
+      const accesToken = generateToken.GenerateSecretToken(data); 
+      const refreshToken = generateToken.GenerateRefreshToken(data);  
+
+      connectDB.query( 'INSERT INTO refresh_tokens (id_user, token, expires_at) VALUES (?, ?, DATE_ADD(NOW(), INTERVAL 8 HOUR))',
+            [data.user_id, refreshToken]);
+
+        res.cookie('refreshToken', refreshToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict',
+        maxAge: 8 * 60 * 60 * 1000,
+       });
+
+    res.json({user: { user_id: data.user_id, email: data.email_user }, accesToken });
    })
+
+   
 }
 
 
