@@ -1,4 +1,5 @@
 const jwt = require("jsonwebtoken"); 
+const { verifyAccessToken } = require("../services/generateToken");
 
 
 
@@ -10,14 +11,16 @@ const VerifyToken = (req, res, next) => {
     return res.status(401).json({ message: "Token tidak ada" })
   }
 
-  jwt.verify(token, "SECRET_KEY", (err, user) => {
-    if (err) {
-      return res.status(403).json({ message: "Token tidak valid" })
-    }
+   try {
 
-    req.user = user;
+    req.user = verifyAccessToken(user);
     next();
-  })
+
+   } catch (error) {
+    return res.status(401).json({ message: 'Token tidak valid atau expired' });
+   }
+
+
 
 }
 

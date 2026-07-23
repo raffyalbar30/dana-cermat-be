@@ -5,12 +5,13 @@ const transactions = require("../controllers/Transactions");
 const budgets = require("../controllers/BudgetCategory");
 const VerifyToken  = require("../middlewares/JwtToken");
 const { AuthRefreshToken } = require('../controllers/RefreshToken');
+const { loginLimiter } = require('../middlewares/Loginlimiter');
 const router = express.Router();
 router.use(express.json());
 
 // Router disini untuk fecthing apo
 router.post("/Register", Register.RegisterAuth); 
-router.post("/Login", Login.LoginAuth);
+router.post("/Login", loginLimiter,Login.LoginAuth);
 router.post("/Refresh", AuthRefreshToken);
 router.post("/Transaksi", VerifyToken, transactions.Transactions);
 router.get("/TotalTransaksi", VerifyToken, transactions.TotalTransactions);

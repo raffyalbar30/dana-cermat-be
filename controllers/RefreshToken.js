@@ -6,7 +6,7 @@ const AuthRefreshToken = async (req, res) => {
    const token = req.cookies.refreshToken;
 
    if(!token) {
-      res.status(403).json({
+     return res.status(403).json({
          message:"Token tidak ada!!"
       })
    }
@@ -21,15 +21,16 @@ const AuthRefreshToken = async (req, res) => {
         }
 
         const data = result[0].id_refresh; 
+
        //   rotate token yang tidak valid menjadi token baru
         const sql = 'UPDATE refresh_tokens SET revoked = TRUE WHERE id_refresh = ?'; 
         connectDB.query(sql,[data])
 
       }); 
 
+      // Generate token and insert token 
       const sql2 = 'SELECT * FROM user_cermat WHERE user_id = ?'; 
       const data2 = decoded.user_id;
-      
       connectDB.query(sql2, [data2], (req, result) => {
 
          const results = result[0];
@@ -46,10 +47,8 @@ const AuthRefreshToken = async (req, res) => {
             maxAge: 8 * 60 * 60 * 1000,
          });
 
-         res.status(201).json({user: { user_id: results.user_id, email: results.email_user }, accesToken });
+        return res.status(201).json({user: { user_id: results.user_id, email: results.email_user }, accesToken });
       })
-
-
 
    } catch (error) {
       console.log(error);

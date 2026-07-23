@@ -56,6 +56,22 @@ exports.LoginAuth = async(req, res) => {
    
 }
 
+exports.LogoutAuth = async (req, res) => {
+  const token = req.cookies.refreshToken;
+  
+  if(token){
+    const sql = 'UPDATE refresh_tokens WHERE token = ? AND revoked = FALSE AND expires_at > NOW()'
+    connectDB.query(sql, [token], (err, result) => {
+        return res.status(201).json({
+           message:"Log out berhasil"
+        })
+    })
+  }
+
+  res.clearCookie('refreshToken');
+
+}
+
 
 // -------------------------------------//
      //   Authentications Register //
