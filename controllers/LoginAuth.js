@@ -6,9 +6,9 @@ const generateToken = require("../services/generateToken");
 exports.LoginAuth = async(req, res) => {
   const {email_user, password_user} = req.body;
 
-   const sql = `SELECT * FROM user_cermat WHERE email_user ='${email_user}'`;
+   const sql = `SELECT * FROM user_cermat WHERE email_user = ?`;
 
-   connectDB.query(sql, async (err, result) => {
+   connectDB.query(sql, [email_user], async (err, result) => {
       const data = result[0]; 
 
       if(!data){
