@@ -1,6 +1,7 @@
 const express = require('express');
-const Login = require("../controllers/Authcontrollers")
-const Register = require("../controllers/Authcontrollers");
+const Login = require("../controllers/LoginAuth");
+const Register = require("../controllers/RegisterAuth");
+const Logout = require("../controllers/Logout");
 const transactions = require("../controllers/Transactions");
 const budgets = require("../controllers/BudgetCategory");
 const VerifyToken  = require("../middlewares/JwtToken");
@@ -11,7 +12,8 @@ router.use(express.json());
 
 // Router disini untuk fecthing apo
 router.post("/Register", Register.RegisterAuth); 
-router.post("/Login", loginLimiter,Login.LoginAuth);
+router.post("/Login", loginLimiter, Login.LoginAuth);
+router.post("/Logout", Logout.LogoutAuth);
 router.post("/Refresh", AuthRefreshToken);
 router.post("/Transaksi", VerifyToken, transactions.Transactions);
 router.get("/TotalTransaksi", VerifyToken, transactions.TotalTransactions);

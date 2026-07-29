@@ -1,9 +1,5 @@
 const connectDB = require("../DB/connections"); 
 
-const JwtLogin = (user_id, token, expires_at) => {
-
-   return connectDB.execute(); 
-}
 
 const userRegisterAuth = (email_user, password_user) => {
    const sql = `INSERT INTO user_cermat (email_user, password_user) VALUES ('${email_user}', '${password_user}')`;
