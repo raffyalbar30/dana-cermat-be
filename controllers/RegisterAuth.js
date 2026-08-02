@@ -17,7 +17,7 @@ exports.RegisterAuth = async (req, res) => {
 
       if (result.length > 0){
         return res.status(401).json({
-          message: "Maaf gagal membuat akun karena akun telah terdaftar silahkan login 😁👍!",
+          message: "Maaf gagal email sudah terdaftar silahkan login 😶🙏!",
         });
       } else {
           userModels.userRegisterAuth(email_user, hashedPassword);
@@ -28,7 +28,7 @@ exports.RegisterAuth = async (req, res) => {
 
     if (err) {
       return res.status(500).json({
-        message: "Gagal tidak ada akun di database",
+        message: "Gagal tidak ada akun",
         error: err.message
       });
     }
