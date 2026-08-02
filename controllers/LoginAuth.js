@@ -12,17 +12,16 @@ exports.LoginAuth = async(req, res) => {
       const data = result[0]; 
 
       if(!data){
-         return res.status(403).json({
+         return res.status(401).json({
             message:"Maaf user tidak terdaftar silahkan daftar terlebih dahulu!"
          })
       }
       
-
-      const passwordValid = await bcrypt.compare(password_user, data.password_user); 
+     const passwordValid = await bcrypt.compare(password_user, data.password_user); 
 
       if(!passwordValid){
-        return res.status(403).json({
-          message:"Maaf email atau password salah!"
+        return res.status(401).json({
+          message:"Maaf email atau password salah coba lagi ya! 🥺👉👈"
         })
       } 
 
@@ -36,7 +35,7 @@ exports.LoginAuth = async(req, res) => {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'strict',
-        maxAge: 8 * 60 * 60 * 1000,
+        maxAge: 3 * 60 * 60 * 1000,
        });
 
     res.json({user: { user_id: data.user_id, email: data.email_user }, accesToken });
