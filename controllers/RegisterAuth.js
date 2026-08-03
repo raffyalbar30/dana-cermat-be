@@ -22,7 +22,7 @@ exports.RegisterAuth = async (req, res) => {
       } else {
           userModels.userRegisterAuth(email_user, hashedPassword);
           return res.status(201).json({
-            message: "Akun sudah terRegisterasi silahkan Login 😁👍!!", 
+            message: "Registrasi berhasil silahkan Login 😁👍!!", 
           })
       }
 
