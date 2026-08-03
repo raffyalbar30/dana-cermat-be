@@ -11,7 +11,7 @@ exports.RegisterAuth = async (req, res) => {
   connectDB.query(sql, [email_user], (err, result) => {
       if(password_user !== confirm_password){
           return res.status(401).json({
-              message:"password harus sama dengan confirm password! 😶🤙"
+              message:"Password harus sama dengan confirm password! 😶🤙"
           })
       }
 
@@ -22,7 +22,7 @@ exports.RegisterAuth = async (req, res) => {
       } else {
           userModels.userRegisterAuth(email_user, hashedPassword);
           return res.status(201).json({
-            message: "Registrasi berhasil silahkan Login 😁👍!!", 
+            message: "Registrasi berhasil silahkan login 😁👍!!", 
           })
       }
 
