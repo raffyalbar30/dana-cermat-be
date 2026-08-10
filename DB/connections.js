@@ -1,3 +1,4 @@
+require('dotenv').config();
 const mysql = require("mysql2");
 
 // -------------------------------------//
@@ -5,10 +6,10 @@ const mysql = require("mysql2");
 // -------------------------------------//
 
 const connectDB = mysql.createConnection({
-    host: "localhost",
-    user: "root",
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
     password: "",
-    database: "dana-cermat"
+    database: process.env.DB_NAME
 });
 
 exports.Database = connectDB.connect((err) => {
