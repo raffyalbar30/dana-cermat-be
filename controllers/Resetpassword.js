@@ -6,7 +6,14 @@ const Resetpassword = (req, res) => {
 
     const sql = `SELECT * FROM user_cermat WHERE email_user = ?`;
     connectDB.query(sql, [email_user], (err, result) => {
-         const data = result[0].email_user; 
+         const data = result[0];
+         if(!data){
+           return res.status(401).json({
+              message: " Maaf email tidak terdaftar "
+           })
+         }
+    
+
          
     })
 }
