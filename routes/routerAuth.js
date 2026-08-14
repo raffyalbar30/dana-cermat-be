@@ -8,6 +8,7 @@ const transactions = require("../controllers/Transactions");
 const budgets = require("../controllers/BudgetCategory");
 const VerifyToken  = require("../middlewares/JwtToken");
 const { loginLimiter } = require('../middlewares/Loginlimiter');
+const { forgotPasswordLimiter } = require('../middlewares/OTPlimiter');
 const router = express.Router();
 router.use(express.json());
 
@@ -16,7 +17,7 @@ router.post("/Register", Register.RegisterAuth);
 router.post("/Login", loginLimiter, Login.LoginAuth);
 router.post("/Logout", Logout.LogoutAuth);
 router.post("/RefreshToken", Refresh.AuthRefreshToken);
-router.post("/ResetPassword", ResetPassword.Resetpassword);
+router.post("/ResetPassword", forgotPasswordLimiter, ResetPassword.Resetpassword);
 router.post("/Transaksi", VerifyToken, transactions.Transactions);
 router.get("/TotalTransaksi", VerifyToken, transactions.TotalTransactions);
 router.get("/Transaksi/v1/getCategories", transactions.TypeCategories); 
