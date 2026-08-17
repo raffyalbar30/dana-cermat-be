@@ -12,7 +12,7 @@ async function hashOtp(otp) {
 }
 
 async function compareOtp(otpInput, otpHash) {
-  return bcrypt.compare(otpInput, otpHash);
+  return await bcrypt.compare(otpInput, otpHash);
 }
 
 module.exports = { generateOtp, hashOtp, compareOtp };
