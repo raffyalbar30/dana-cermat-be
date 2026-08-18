@@ -38,11 +38,16 @@ function verifyRefreshToken(token) {
   return jwt.verify(token, process.env.REFRESH_TOKEN_SECRET);
 }
 
+function verifyResetpasword(token){
+   return jwt.verify(token, process.env.JWT_RESET_SECRET); 
+}
 
 module.exports = {
     GenerateSecretToken, 
     GenerateRefreshToken, 
     GenerateResetToken,
     verifyAccessToken, 
-    verifyRefreshToken
+    verifyRefreshToken, 
+    verifyResetpasword
+    
 }

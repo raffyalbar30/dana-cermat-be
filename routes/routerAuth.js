@@ -17,8 +17,10 @@ router.post("/Register", Register.RegisterAuth);
 router.post("/Login", loginLimiter, Login.LoginAuth);
 router.post("/Logout", Logout.LogoutAuth);
 router.post("/RefreshToken", Refresh.AuthRefreshToken);
-router.post("/ResetPassword", forgotPasswordLimiter, ResetPassword.Resetpassword);
+router.post("/ResetPassword", forgotPasswordLimiter, ResetPassword.SendOTP);
 router.post("/verify/ResetPassword", ResetPassword.verifyOTP);
+router.post("/verify/Newpassword", ResetPassword.ResetPassword);
+
 router.post("/Transaksi", VerifyToken, transactions.Transactions);
 router.get("/TotalTransaksi", VerifyToken, transactions.TotalTransactions);
 router.get("/Transaksi/v1/getCategories", transactions.TypeCategories); 
