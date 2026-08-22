@@ -2,6 +2,7 @@ const connectDB = require("../DB/connections");
 const { generateOtp, hashOtp, compareOtp } = require("../Utils/OTPGeneratecode");
 const deleveryOTP = require("../DB/mailer"); 
 const { GenerateResetToken, verifyResetpasword } = require("../services/generateToken");
+const bcrypt = require("bcrypt");
 
 
 // sending OTP
@@ -16,7 +17,7 @@ const SendOTP = (req, res) => {
 
          if(!data){
            return res.status(401).json({
-              message: " Maaf email tidak terdaftar "
+              message: " Maaf email tidak terdaftar, silahkan daftar !! "
            })
          }
 
@@ -35,12 +36,12 @@ const SendOTP = (req, res) => {
 
            await deleveryOTP.SendingOtp(email_user, OTP); 
            return res.status(201).json({
-               message: "Jika email terdaftar, OTP telah dikirim ke email Anda"
+               message: "Jika email terdaftar, Kode OTP telah dikirim ke email Anda!!"
            })
         }
 
         } catch (error) {
-             return res.status(500).json({ message: 'Terjadi kesalahan pada server' });
+             return 
         }
          
     })
@@ -59,9 +60,6 @@ const verifyOTP = (req, res) => {
     const sql = `SELECT user_id FROM user_cermat WHERE email_user = ?`;
 
     connectDB.query(sql, [email_user], (err, result) => {
-        if (err) {
-            return res.status(500).json({ message: 'Terjadi kesalahan pada server' });
-        }
 
         const data = result[0];
 
@@ -76,23 +74,20 @@ const verifyOTP = (req, res) => {
              ORDER BY created_at DESC LIMIT 1`,
             [userId],
             async (eror, resultv2) => {
-                if (eror) {
-                    return res.status(500).json({ message: 'Terjadi kesalahan pada server' });
-                }
-
+            
                 const VerifyOTP = resultv2[0];
 
                 if (!VerifyOTP) {
-                    return res.status(400).json({ message: 'OTP tidak ditemukan, silakan minta OTP baru' });
+                    return res.status(400).json({ message: 'OTP tidak ditemukan, silakan minta OTP baru!' });
                 }
 
                 // cek expired & attempt limit DULU, sebelum validasi OTP
                 if (VerifyOTP.attempt_count >= VerifyOTP.max_attempts) {
-                    return res.status(429).json({ message: 'Terlalu banyak percobaan, silakan tunggu dan coba lagi' });
+                    return res.status(429).json({ message: 'Terlalu banyak percobaan, silakan tunggu dan coba lagi!' });
                 }
 
                 if (new Date() > new Date(VerifyOTP.expires_at)) {
-                    return res.status(400).json({ message: 'OTP sudah kedaluwarsa, silakan minta OTP baru' });
+                    return res.status(400).json({ message: 'OTP sudah kedaluwarsa, silakan minta OTP baru!' });
                 }
 
                 try {
@@ -103,7 +98,7 @@ const verifyOTP = (req, res) => {
                             'UPDATE password_resets SET attempt_count = attempt_count + 1 WHERE id_resetpassword = ?',
                             [VerifyOTP.id_resetpassword]
                         );
-                        return res.status(400).json({ message: 'OTP yang kamu sudah dipakai, silahkan kirim ulang' });
+                        return res.status(400).json({ message: 'OTP yang kamu sudah dipakai, silahkan kirim ulang 🤖' });
                     }
 
                     await connectDB.promise().query(
@@ -129,6 +124,7 @@ const verifyOTP = (req, res) => {
 // new password
 const ResetPassword = (req, res) => {
     const { token, newpassword } = req.body;
+    const TokenConvert = String(token);
 
     if (!token || !newpassword) {
         return res.status(401).json({
@@ -142,7 +138,7 @@ const ResetPassword = (req, res) => {
 
     let payload;
     try {
-        payload = verifyResetpasword(token);
+        payload = verifyResetpasword(TokenConvert);
     } catch (error) {
         if (error.name === 'TokenExpiredError') {
             return res.status(400).json({ message: 'OTP reset password sudah kedaluwarsa, silakan minta OTP baru' });
@@ -157,6 +153,7 @@ const ResetPassword = (req, res) => {
         [id_resetpassword, user_id],
         async (err, result) => {
             if (err) {
+                console.error(err);
                 return res.status(500).json({ message: 'Terjadi kesalahan pada server' });
             }
 
@@ -166,26 +163,23 @@ const ResetPassword = (req, res) => {
                 return res.status(400).json({ message: 'Sesi reset password tidak ditemukan' });
             }
 
-            if (resetRow.token_used_for_reset) {
-                return res.status(400).json({ message: 'Token reset ini sudah pernah dipakai' });
-            }
-
             try {
                 const hashedPassword = await bcrypt.hash(newpassword, 10);
 
                 await connectDB.promise().query(
-                    'UPDATE user_cermat SET password = ? WHERE user_id = ?',
+                    'UPDATE user_cermat SET password_user = ? WHERE user_id = ?',
                     [hashedPassword, user_id]
                 );
 
                 await connectDB.promise().query(
-                    'UPDATE password_resets SET token_used_for_reset = 1 WHERE id_resetpassword = ?',
+                    'UPDATE password_resets SET used_token = 1 WHERE id_resetpassword = ?',
                     [id_resetpassword]
                 );
 
                 return res.status(200).json({ message: 'Password berhasil diubah, silakan login dengan password baru' });
 
             } catch (error) {
+                console.error(error);
                 return res.status(500).json({ message: 'Terjadi kesalahan pada server' });
             }
         }

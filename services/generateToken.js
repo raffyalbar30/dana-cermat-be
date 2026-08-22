@@ -24,7 +24,10 @@ const GenerateRefreshToken = (data) => {
 // buat bikin reset token 
 const GenerateResetToken = (data) => {
     return jwt.sign(
-        { user_id: data.user_id }, 
+        { 
+            user_id: data.id_user, 
+            id_resetpassword: data.id_resetpassword
+        }, 
         process.env.RESET_TOKEN_SECRET,
         { expiresIn: process.env.RESET_TOKEN_EXPIRES }
     )
@@ -39,7 +42,7 @@ function verifyRefreshToken(token) {
 }
 
 function verifyResetpasword(token){
-   return jwt.verify(token, process.env.JWT_RESET_SECRET); 
+   return jwt.verify(token, process.env.RESET_TOKEN_SECRET); 
 }
 
 module.exports = {

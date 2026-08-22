@@ -8,7 +8,7 @@ const cors = require("cors");
 
 // accept cors for sending cookies ( Important )
 app.use(cors({
-  origin: "http://localhost:5173",
+  origin: "http://localhost:5174",
   credentials: true,
 }));
 

@@ -5,7 +5,7 @@ const forgotPasswordLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 3,
   message: {
-    message: 'Terlalu banyak permintaan OTP. Coba lagi nanti.',
+    message: 'Terlalu banyak permintaan OTP. Coba lagi nanti ⚠️',
   },
   standardHeaders: true,
   legacyHeaders: false,
