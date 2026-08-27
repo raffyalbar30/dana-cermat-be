@@ -78,14 +78,6 @@ const verifyOTP = (req, res) => {
         const VerifyOTP = resultv2[0];
         const validateOTP = await compareOtp(String(OTP), VerifyOTP.otp_hash);
 
-        // cek expired & attempt limit DULU, sebelum validasi OTP
-        if (VerifyOTP.attempt_count >= VerifyOTP.max_attempts) {
-            return res.status(429).json({ message: 'Terlalu banyak percobaan, silakan tunggu 15 menit lagi!' });
-        }
-
-        if (new Date() > new Date(VerifyOTP.expires_at)) {
-            return res.status(400).json({ message: 'Kode OTP kadaluwarsa, silakan minta Kode OTP baru!' });
-        }
 
         try {
 
@@ -99,6 +91,16 @@ const verifyOTP = (req, res) => {
                 return res.status(403).json({ message: 'Kode OTP tidak valid! silakan minta OTP baru!' });
             }
 
+            if (new Date() > new Date(VerifyOTP.expires_at)) {
+              return res.status(400).json({ message: 'Kode OTP kadaluwarsa, silakan minta Kode OTP baru!' });
+            }
+
+            
+            // cek expired & attempt limit DULU, sebelum validasi OTP
+            if (VerifyOTP.attempt_count >= VerifyOTP.max_attempts) {
+                return res.status(429).json({ message: 'Terlalu banyak percobaan, silakan tunggu 15 menit lagi!' });
+            }
+
             // OTP benar -> tandai token sudah dipakai
             await connectDB.promise().query(
                 'UPDATE password_resets SET used_token = 1 WHERE id_resetpassword = ?',
@@ -107,9 +109,15 @@ const verifyOTP = (req, res) => {
 
             const Resetpassword = GenerateResetToken(VerifyOTP);
 
-            return res.status(201).json({
+           return res.status(201).json({
                 message: "OTP berhasil diverifikasi",
-                user: { Resetpassword }
+                user: {
+                    Resetpassword,
+                },
+                date: {
+                    expires_at: VerifyOTP.expires_at,
+                    created_at: VerifyOTP.created_at
+                }
             });
 
         } catch (error) {
@@ -151,7 +159,7 @@ const ResetPassword = (req, res) => {
         `SELECT * FROM password_resets WHERE id_resetpassword = ? AND id_user = ?`,
         [id_resetpassword, user_id],
         async (err, result) => {
-
+    
             try {
                 const hashedPassword = await bcrypt.hash(newpassword, 10);
 
