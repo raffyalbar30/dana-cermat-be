@@ -26,30 +26,31 @@ exports.TotalTransactions = (req, res) => {
   })
 }
 
-
-// transactions
-exports.Transactions = (req, res) => {
+// add transactions 
+exports.AddTransactions = (req, res) => {
 const {id_categories, amount, descriptions, date} = req.body;
-const userid = req.user.id;
+const userid = req.user.user_id;
+
 
 const execute = userModels.transactions(userid, id_categories, amount, descriptions, date) 
  if (execute) {
      return res.status(201).json({
-        message: "data sudah ditambahkan", 
+        message: "data transaksi berhasil ditambahkan", 
         amount : amount, 
         descriptions : descriptions, 
         date : date
      })
  } else {
      return res.status(401).json({
-            message: "maaf data gagal ditambahkan"
+            message: "maaf data transactions gagal ditambahkan"
         })
  }
 
 }
 
 exports.getAllTranscations = (req, res) => {
-    const tokenUser  = req.user.id;
+    
+    const userid = req.user.user_id;
     const page = Number(req.query.page) || 1;
     const limit = Number(req.query.limit) || 5; 
     const start = (page - 1 ) * limit; 
@@ -60,7 +61,7 @@ exports.getAllTranscations = (req, res) => {
      transactions.id_transaction, user_cermat.email_user, categories.name_categories, categories.type_categories, 
      transactions.amount, transactions.descriptions, transactions.created_at FROM transactions JOIN user_cermat ON 
      transactions.id_user = user_cermat.user_id JOIN categories ON transactions.id_categories = categories.categories_id
-     WHERE user_cermat.user_id = ${tokenUser}`;
+     WHERE user_cermat.user_id = ${userid}`;
 
     connectDB.query(sql, (err, result) => {
          if(result) {
@@ -100,8 +101,9 @@ exports.getAllTranscations = (req, res) => {
 
 exports.TypeCategories = ( req, res) => {
    const { type_categories } = req.query; 
-   const sql = `SELECT * FROM categories WHERE type_categories = '${type_categories}'`;
-   connectDB.query(sql, (err, result) => {
+   const sql = `SELECT * FROM categories WHERE type_categories = ? `;
+
+   connectDB.query(sql, [type_categories], (err, result) => {
        if(result) {
         return res.status(201).json({
             data: result
@@ -117,9 +119,10 @@ exports.TypeCategories = ( req, res) => {
    })
 }
 
-
 exports.RenameTranscations = (req, res) => {
    const { amount, descriptions, id_categories, date, idtransaction, } = req.body; 
+   const userid = req.user.user_id;
+
    const convertDate = date ? `${new Date(date).getFullYear()}-${String(new Date(date).getMonth() + 1)
                         .padStart(2, "0")}-${String(new Date(date).getDate()).padStart(2, "0")}`: "";
 
@@ -142,10 +145,10 @@ exports.RenameTranscations = (req, res) => {
    }
 }
 
-
 exports.DellateTranscations = (req, res ) => {
     const { idtransactions } = req.body; 
     const execute = userModels.dellatetransacions(idtransactions); 
+    const userid = req.user.user_id;
 
     if (execute) {
         return res.status(201).json({

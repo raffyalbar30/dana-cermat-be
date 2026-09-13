@@ -1,4 +1,3 @@
-const jwt = require("jsonwebtoken"); 
 const { verifyAccessToken } = require("../services/generateToken");
 
 
@@ -12,7 +11,7 @@ const VerifyToken = (req, res, next) => {
 
    try {
 
-    req.user = verifyAccessToken(user);
+    req.user = verifyAccessToken(token);
     next();
 
    } catch (error) {
