@@ -22,7 +22,7 @@ exports.typeBudgetCategories = (req, res) => {
 
 
 exports.AddBudgets = (req, res) => {
-    const userid = req.user.id;
+    const userid = req.user.user_id;
     const {category, amount, periode, startdate} = req.body; 
 
     const startDate = new Date(startdate);
@@ -74,7 +74,7 @@ exports.AddBudgets = (req, res) => {
 }
 
 exports.getAllBudgets = async ( req, res) => {
-  const tokenUser  = req.user.id;
+ const userid = req.user.user_id;
   const sql = `SELECT
     b.id_budgets,
     u.user_id,
@@ -102,7 +102,7 @@ LEFT JOIN transactions t
 ON t.id_user = b.budget_user
 AND t.id_categories = b.budget_category
 AND t.created_at BETWEEN b.start_date AND b.end_date
-WHERE b.budget_user = ${tokenUser}
+WHERE b.budget_user = ${userid}
 GROUP BY
     b.id_budgets
 ORDER BY b.created_at DESC`; 
@@ -146,6 +146,7 @@ connectDB.query(sql, (err, result) => {
 // edd dellated budgets
 exports.DellateBudgets = (req, res ) => {
     const { idBudgets } = req.body; 
+    const userid = req.user.user_id;
     const execute = userModels.dellatebudgets(idBudgets); 
 
     if (execute) {
@@ -162,6 +163,7 @@ exports.DellateBudgets = (req, res ) => {
 
 exports.UpdateBudgets = (req, res) => {
    const { idcategory, amount, period, startdate, endDate, idbudgets } = req.body; 
+  const userid = req.user.user_id;''
    const convertDate = startdate ? `${new Date(startdate).getFullYear()}-${String(new Date(startdate).getMonth() + 1)
                         .padStart(2, "0")}-${String(new Date(startdate).getDate()).padStart(2, "0")}`: "";
 

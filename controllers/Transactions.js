@@ -152,7 +152,7 @@ exports.DellateTranscations = (req, res ) => {
 
     if (execute) {
         return res.status(201).json({
-           message: `transaksi dengan id ${idtransactions} telah berhasil dihapus`,
+           message: `transaksi telah berhasil dihapus`,
         }) 
     } else { 
         return res.status(404).json({
