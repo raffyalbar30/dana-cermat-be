@@ -4,7 +4,8 @@ const userModels = require("../model/users");
 
 // Total Transactions 
 exports.TotalTransactions = (req, res) => {
-  const userid = req.user.id;
+  const userid = req.user.user_id;
+
   const sql = `SELECT COALESCE(SUM(CASE WHEN c.type_categories='Income' THEN t.amount ELSE 0 END),0) AS total_income, 
    COALESCE(SUM(CASE WHEN c.type_categories='Expanses' THEN t.amount ELSE 0 END),0) AS total_expense, COALESCE(SUM(CASE WHEN c.type_categories='Income' THEN t.amount ELSE -t.amount END),0)
     AS net_balance FROM transactions t JOIN categories c ON t.id_categories = c.categories_id WHERE t.id_user = ${userid}`;

@@ -20,7 +20,6 @@ exports.typeBudgetCategories = (req, res) => {
     })
 }
 
-
 exports.AddBudgets = (req, res) => {
     const userid = req.user.user_id;
     const {category, amount, periode, startdate} = req.body; 
@@ -192,7 +191,7 @@ exports.UpdateBudgets = (req, res) => {
 
 
 exports.TotalBudegts = (req, res) =>{
-     const userid = req.user.id;
+    const userid = req.user.user_id;
 
      const sql = `SELECT SUM(b.budget_amount) AS total_budget, SUM( ( SELECT COALESCE(SUM(t.amount), 0) FROM transactions 
      t WHERE t.id_user = b.budget_user AND t.id_categories = b.budget_category AND DATE(t.created_at) BETWEEN b.start_date AND b.end_date ) )
