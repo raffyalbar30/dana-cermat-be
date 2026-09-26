@@ -1,5 +1,4 @@
 const connectDB = require("../DB/connections"); 
-const userModels = require("../model/users"); 
 const bcrypt = require("bcrypt");
 const generateToken = require("../services/generateToken"); 
 
@@ -40,6 +39,5 @@ exports.LoginAuth = async(req, res) => {
 
     res.json({user: { user_id: data.user_id, email: data.email_user }, accesToken });
    })
-
-   
+ 
 }

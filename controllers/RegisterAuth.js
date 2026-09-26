@@ -1,7 +1,7 @@
 const connectDB = require("../DB/connections"); 
 const userModels = require("../model/users"); 
 const bcrypt = require("bcrypt");
-const generateToken = require("../services/generateToken"); 
+
 
 exports.RegisterAuth = async (req, res) => {
   const {email_user, password_user, confirm_password} = req.body; 

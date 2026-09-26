@@ -6,6 +6,7 @@ const Refresh = require("../controllers/RefreshToken");
 const ResetPassword = require("../controllers/Resetpassword");
 const transactions = require("../controllers/Transactions");
 const budgets = require("../controllers/BudgetCategory");
+const chart = require("../controllers/Chart");
 const VerifyToken = require("../middlewares/JwtToken");
 const { loginLimiter } = require('../middlewares/Loginlimiter');
 const { forgotPasswordLimiter } = require('../middlewares/OTPlimiter');
@@ -36,5 +37,7 @@ router.post("/Budgets/v1/addBudgets", VerifyToken, budgets.AddBudgets);
 router.get("/Budgets/v1/getAllBudgets", VerifyToken, budgets.getAllBudgets);
 router.post("/Budgets/v1/deleteBudgets", VerifyToken, budgets.DellateBudgets);
 router.post("/Budgets/v1/updateBudgets", VerifyToken, budgets.UpdateBudgets);
+
+router.get("/analytics/income-expenses", VerifyToken, chart.Chart); 
 
 module.exports = router;

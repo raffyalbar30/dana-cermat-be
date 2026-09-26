@@ -1,7 +1,5 @@
 const connectDB = require("../DB/connections"); 
-const userModels = require("../model/users"); 
-const bcrypt = require("bcrypt");
-const generateToken = require("../services/generateToken"); 
+
 
 exports.LogoutAuth = async (req, res) => {
   const token = req.cookies.refreshToken;
