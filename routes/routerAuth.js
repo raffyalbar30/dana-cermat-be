@@ -39,5 +39,6 @@ router.post("/Budgets/v1/deleteBudgets", VerifyToken, budgets.DellateBudgets);
 router.post("/Budgets/v1/updateBudgets", VerifyToken, budgets.UpdateBudgets);
 
 router.get("/analytics/income-expenses", VerifyToken, chart.Chart); 
+router.get("/analytics/categories-expenses", VerifyToken, chart.ChartPie); 
 
 module.exports = router;

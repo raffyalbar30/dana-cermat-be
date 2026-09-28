@@ -88,6 +88,76 @@ const Chart = (req, res) => {
     });
 };
 
+const ChartPie = (req, res) => {
+    const userId = req.user.user_id;
+    const { period } = req.query;
+
+    let interval;
+
+    switch (period) {
+        case "7d":
+            interval = 7;
+            break;
+
+        case "1m":
+            interval = 30;
+            break;
+
+        case "3m":
+            interval = 90;
+            break;
+
+        default:
+            return res.status(400).json({
+                message: "Period tidak valid"
+            });
+    }
+
+    const sql = `
+        SELECT
+            c.name_categories AS category,
+            SUM(t.amount) AS expenses,
+            ROUND(
+                SUM(t.amount) /
+                (
+                    SELECT SUM(t2.amount)
+                    FROM transactions t2
+                    JOIN categories c2
+                        ON t2.id_categories = c2.categories_id
+                    WHERE c2.type_categories = 'Expanses'
+                      AND t2.id_user = ?
+                      AND t2.created_at >= NOW() - INTERVAL ${interval} DAY
+                ) * 100,
+                2
+            ) AS percentage
+        FROM transactions t
+        JOIN categories c
+            ON t.id_categories = c.categories_id
+        WHERE c.type_categories = 'Expanses'
+          AND t.id_user = ?
+          AND t.created_at >= NOW() - INTERVAL ${interval} DAY
+        GROUP BY c.categories_id, c.name_categories
+        ORDER BY expenses DESC
+    `;
+
+    connectDB.query(sql, [userId, userId], (error, data) => {
+        if (error) {
+            console.error("Chart Pie Error:", error);
+
+            return res.status(500).json({
+                message: "Gagal mengambil data analytics",
+                error: error.message,
+            });
+        }
+
+        return res.status(200).json({
+            period,
+            data,
+        });
+    });
+};
+
 module.exports = {
     Chart,
+    ChartPie, 
 };
