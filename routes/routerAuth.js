@@ -25,6 +25,7 @@ router.post("/verify/Newpassword", ResetPassword.ResetPassword);
 // Transaksi routes (v1 konsisten huruf kecil)
 router.post("/Transaksi/v1/AddTransaksi", VerifyToken, transactions.AddTransactions);
 router.get("/Transaksi/v1/TotalTransaksi", VerifyToken, transactions.TotalTransactions);
+router.get("/Transaksi/v1/Rata-rata-Transaksi", VerifyToken, transactions.TotalAvarageTransactions); 
 router.get("/Transaksi/v1/getCategories", transactions.TypeCategories);
 router.get("/Transaksi/v1/getAllTransaksi", VerifyToken, transactions.getAllTranscations);
 router.post("/Transaksi/v1/renameTransaksi", VerifyToken, transactions.RenameTranscations);
@@ -40,5 +41,6 @@ router.post("/Budgets/v1/updateBudgets", VerifyToken, budgets.UpdateBudgets);
 
 router.get("/analytics/income-expenses", VerifyToken, chart.Chart); 
 router.get("/analytics/categories-expenses", VerifyToken, chart.ChartPie); 
+router.get("/analytics/budget-expanses", VerifyToken, chart.Progressbar); 
 
 module.exports = router;

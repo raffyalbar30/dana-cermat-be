@@ -2,30 +2,230 @@ const connectDB = require("../DB/connections");
 const userModels = require("../model/users");
 
 
-// Total Transactions 
+// Total Transactions 1 Month
 exports.TotalTransactions = (req, res) => {
   const userid = req.user.user_id;
 
-  const sql = `SELECT COALESCE(SUM(CASE WHEN c.type_categories='Income' THEN t.amount ELSE 0 END),0) AS total_income, 
-   COALESCE(SUM(CASE WHEN c.type_categories='Expanses' THEN t.amount ELSE 0 END),0) AS total_expense, COALESCE(SUM(CASE WHEN c.type_categories='Income' THEN t.amount ELSE -t.amount END),0)
-    AS net_balance FROM transactions t JOIN categories c ON t.id_categories = c.categories_id WHERE t.id_user = ${userid}`;
- 
-  connectDB.query(sql, (err, result) => {
-      if (result) {
-        return res.status(201).json({
-            userid: userid, 
-            data: result,
-            message: "memuat data total transactions"
-        })
-      } else {
-        return res.status(404).json({
-            err: Error, 
-            message: "gagal memuat data total transactions"
-        })
-      }
+  const sql = `
+    SELECT 
+      COALESCE(
+        SUM(
+          CASE 
+            WHEN c.type_categories = 'Income' 
+            THEN t.amount 
+            ELSE 0 
+          END
+        ), 0
+      ) AS total_income,
 
-  })
-}
+      COALESCE(
+        SUM(
+          CASE 
+            WHEN c.type_categories = 'Expanses' 
+            THEN t.amount 
+            ELSE 0 
+          END
+        ), 0
+      ) AS total_expense
+
+    FROM transactions t
+    JOIN categories c 
+      ON t.id_categories = c.categories_id
+
+    WHERE t.id_user = ?
+      AND t.created_at >= DATE_SUB(NOW(), INTERVAL 1 MONTH)
+  `;
+
+  connectDB.query(sql, [userid], (err, result) => {
+
+    if (err) {
+      return res.status(500).json({
+        message: "Gagal memuat data total transactions",
+        error: err
+      });
+    }
+
+    const totalIncome = Number(result[0].total_income);
+    const totalExpense = Number(result[0].total_expense);
+
+    const netSaving = totalIncome - totalExpense;
+
+    const totalFlow = totalIncome + totalExpense;
+
+    const incomeRate = totalFlow > 0
+      ? (totalIncome / totalFlow) * 100
+      : 0;
+
+    const expenseRate = totalFlow > 0
+      ? (totalExpense / totalFlow) * 100
+      : 0;
+
+    const netSavingRate = totalIncome > 0
+      ? (netSaving / totalIncome) * 100
+      : 0;
+
+    return res.status(200).json({
+      userid: userid,
+
+      data: {
+        total_income: totalIncome,
+        total_expense: totalExpense,
+        net_balance: netSaving,
+
+        income_rate: Number(incomeRate.toFixed(2)),
+        expense_rate: Number(expenseRate.toFixed(2)),
+        net_balance_rate: Number(netSavingRate.toFixed(2))
+      },
+
+      message: "Berhasil memuat data total transactions"
+    });
+  });
+};
+
+exports.TotalAvarageTransactions = (req, res) => {
+    const userId = req.user.user_id; 
+
+    const sql = `SELECT
+    ROUND(AVG(monthly_income), 2) AS avg_monthly_income,
+    ROUND(AVG(monthly_expense), 2) AS avg_monthly_expense,
+
+    ROUND(AVG(income_rate), 2) AS avg_income_rate,
+    ROUND(AVG(expense_rate), 2) AS avg_expense_rate,
+
+    ROUND(AVG(monthly_saving), 2) AS avg_monthly_saving,
+    ROUND(AVG(saving_rate), 2) AS avg_monthly_saving_rate
+
+FROM (
+    SELECT
+        DATE_FORMAT(t.created_at, '%Y-%m') AS month,
+
+        -- Total Income per bulan
+        SUM(
+            CASE
+                WHEN c.type_categories = 'Income'
+                THEN t.amount
+                ELSE 0
+            END
+        ) AS monthly_income,
+
+        -- Total Expenses per bulan
+        SUM(
+            CASE
+                WHEN c.type_categories = 'Expanses'
+                THEN t.amount
+                ELSE 0
+            END
+        ) AS monthly_expense,
+
+        -- Monthly Saving
+        SUM(
+            CASE
+                WHEN c.type_categories = 'Income'
+                THEN t.amount
+                WHEN c.type_categories = 'Expanses'
+                THEN -t.amount
+                ELSE 0
+            END
+        ) AS monthly_saving,
+
+        -- Income Rate
+        (
+            SUM(
+                CASE
+                    WHEN c.type_categories = 'Income'
+                    THEN t.amount
+                    ELSE 0
+                END
+            )
+            /
+            NULLIF(
+                SUM(
+                    CASE
+                        WHEN c.type_categories IN ('Income', 'Expanses')
+                        THEN t.amount
+                        ELSE 0
+                    END
+                ),
+                0
+            )
+        ) * 100 AS income_rate,
+
+        -- Expense Rate
+        (
+            SUM(
+                CASE
+                    WHEN c.type_categories = 'Expanses'
+                    THEN t.amount
+                    ELSE 0
+                END
+            )
+            /
+            NULLIF(
+                SUM(
+                    CASE
+                        WHEN c.type_categories IN ('Income', 'Expanses')
+                        THEN t.amount
+                        ELSE 0
+                    END
+                ),
+                0
+            )
+        ) * 100 AS expense_rate,
+
+        -- Saving Rate
+        (
+            (
+                SUM(
+                    CASE
+                        WHEN c.type_categories = 'Income'
+                        THEN t.amount
+                        WHEN c.type_categories = 'Expanses'
+                        THEN -t.amount
+                        ELSE 0
+                    END
+                )
+                /
+                NULLIF(
+                    SUM(
+                        CASE
+                            WHEN c.type_categories = 'Income'
+                            THEN t.amount
+                            ELSE 0
+                        END
+                    ),
+                    0
+                )
+            ) * 100
+        ) AS saving_rate
+
+    FROM transactions t
+
+    JOIN categories c
+        ON t.id_categories = c.categories_id
+
+    WHERE t.id_user = ?
+      AND t.created_at >= DATE_SUB(NOW(), INTERVAL 90 DAY)
+
+    GROUP BY DATE_FORMAT(t.created_at, '%Y-%m')
+) AS monthly_data`; 
+
+connectDB.query(sql, [userId], (err, results) => {
+
+    if (err) {
+      return res.status(500).json({
+        message: "Gagal memuat rata - rata transactions",
+        error: err
+      });
+    }
+     
+     return res.status(201).json({
+        userid: userId,
+        data: results,
+        message: "rata - rata transaksi telah berhasil dibuat!"
+     })
+})
+
+};
 
 // add transactions 
 exports.AddTransactions = (req, res) => {
@@ -47,7 +247,7 @@ const execute = userModels.transactions(userid, id_categories, amount, descripti
         })
  }
 
-}
+};
 
 exports.getAllTranscations = (req, res) => {
     
@@ -98,7 +298,7 @@ exports.getAllTranscations = (req, res) => {
               })
             }}
     })
-}
+};
 
 exports.TypeCategories = ( req, res) => {
    const { type_categories } = req.query; 
@@ -118,7 +318,7 @@ exports.TypeCategories = ( req, res) => {
          })
        }
    })
-}
+};
 
 exports.RenameTranscations = (req, res) => {
    const { amount, descriptions, id_categories, date, idtransaction, } = req.body; 
@@ -144,7 +344,7 @@ exports.RenameTranscations = (req, res) => {
         error: err.message
      })
    }
-}
+};
 
 exports.DellateTranscations = (req, res ) => {
     const { idtransactions } = req.body; 
@@ -161,4 +361,4 @@ exports.DellateTranscations = (req, res ) => {
             message: "transaksi gagal dihapus",
         })
     }
-}
+};
