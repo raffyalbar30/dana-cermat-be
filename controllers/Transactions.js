@@ -5,7 +5,6 @@ const userModels = require("../model/users");
 // Total Transactions 1 Month
 exports.TotalTransactions = (req, res) => {
   const userid = req.user.user_id;
-
   const sql = `
     SELECT 
       COALESCE(
